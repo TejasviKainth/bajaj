@@ -103,6 +103,10 @@ app.post("/bfhl", async (req, res) => {
     }
 });
 
+app.get("/", (req, res) => {
+    res.send("BFHL API is running. Use /bfhl (POST) and /health (GET) endpoints.");
+});
+
 
 // GET /health
 app.get("/health", (req, res) => {
