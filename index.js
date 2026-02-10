@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 const app = express();
 app.use(cors());
@@ -7,7 +8,12 @@ app.use(express.json());
 
 const EMAIL = "tejasvi0906.be23@chitkara.edu.in";
 
-// Fibonacci
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+
+
 function fibonacci(n) {
     let arr = [0, 1];
     for (let i = 2; i <= n; i++) {
@@ -16,7 +22,7 @@ function fibonacci(n) {
     return arr.slice(0, n + 1);
 }
 
-// Prime filter
+
 function primes(arr) {
     return arr.filter(num => {
         if (num < 2) return false;
@@ -27,7 +33,7 @@ function primes(arr) {
     });
 }
 
-// GCD
+
 function gcd(a, b) {
     return b === 0 ? a : gcd(b, a % b);
 }
@@ -44,8 +50,13 @@ function hcf(arr) {
 
 
 // POST /bfhl
-app.post("/bfhl", (req, res) => {
+app.post("/bfhl", async (req, res) => {
     try {
+
+        if (!req.body) {
+            return res.status(400).json({ is_success: false });
+        }
+
         const body = req.body;
         let result;
 
@@ -62,7 +73,10 @@ app.post("/bfhl", (req, res) => {
             result = hcf(body.hcf);
         }
         else if (body.AI !== undefined) {
-            result = "Mumbai";
+
+            const response = await model.generateContent(body.AI);
+            result = response.response.text();
+
         }
         else {
             return res.status(400).json({ is_success: false });
@@ -75,6 +89,7 @@ app.post("/bfhl", (req, res) => {
         });
 
     } catch (error) {
+        console.log(error);
         res.status(500).json({ is_success: false });
     }
 });
@@ -89,7 +104,7 @@ app.get("/health", (req, res) => {
 });
 
 
-// ⭐ IMPORTANT CHANGE FOR RENDER
+// Render PORT
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
