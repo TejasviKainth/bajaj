@@ -47,7 +47,6 @@ function hcf(arr) {
 app.post("/bfhl", (req, res) => {
     try {
         const body = req.body;
-
         let result;
 
         if (body.fibonacci !== undefined) {
@@ -63,7 +62,7 @@ app.post("/bfhl", (req, res) => {
             result = hcf(body.hcf);
         }
         else if (body.AI !== undefined) {
-            result = "Mumbai"; // single word answer
+            result = "Mumbai";
         }
         else {
             return res.status(400).json({ is_success: false });
@@ -75,7 +74,7 @@ app.post("/bfhl", (req, res) => {
             data: result
         });
 
-    } catch {
+    } catch (error) {
         res.status(500).json({ is_success: false });
     }
 });
@@ -89,4 +88,10 @@ app.get("/health", (req, res) => {
     });
 });
 
-app.listen(3000, () => console.log("Server running"));
+
+// ⭐ IMPORTANT CHANGE FOR RENDER
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server running on ${PORT}`);
+});
