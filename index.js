@@ -1,25 +1,22 @@
 const express = require("express");
 const cors = require("cors");
 
+// ⭐ NEW GEMINI IMPORT
+const { GoogleGenAI } = require("@google/genai");
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 const EMAIL = "tejasvi0906.be23@chitkara.edu.in";
 
-
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
-
-// ✅ CORRECT MODEL
-const model = genAI.getGenerativeModel({
-  model: "gemini-1.0-pro"
+// ⭐ Gemini Setup
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_KEY
 });
 
 
-
-
+// Fibonacci
 function fibonacci(n) {
     let arr = [0, 1];
     for (let i = 2; i <= n; i++) {
@@ -29,6 +26,7 @@ function fibonacci(n) {
 }
 
 
+// Prime
 function primes(arr) {
     return arr.filter(num => {
         if (num < 2) return false;
@@ -40,14 +38,17 @@ function primes(arr) {
 }
 
 
+// GCD
 function gcd(a, b) {
     return b === 0 ? a : gcd(b, a % b);
 }
+
 
 // LCM
 function lcm(arr) {
     return arr.reduce((a, b) => (a * b) / gcd(a, b));
 }
+
 
 // HCF
 function hcf(arr) {
@@ -58,10 +59,6 @@ function hcf(arr) {
 // POST /bfhl
 app.post("/bfhl", async (req, res) => {
     try {
-
-        if (!req.body) {
-            return res.status(400).json({ is_success: false });
-        }
 
         const body = req.body;
         let result;
@@ -78,12 +75,18 @@ app.post("/bfhl", async (req, res) => {
         else if (body.hcf !== undefined) {
             result = hcf(body.hcf);
         }
+
+        // ⭐ FIXED AI BLOCK
         else if (body.AI !== undefined) {
 
-            const response = await model.generateContent(body.AI);
-            result = response.response.text();
+            const response = await ai.models.generateContent({
+                model: "gemini-3-flash-preview",
+                contents: body.AI
+            });
 
+            result = response.text;
         }
+
         else {
             return res.status(400).json({ is_success: false });
         }
