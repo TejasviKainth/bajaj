@@ -10,7 +10,8 @@ const EMAIL = "tejasvi0906.be23@chitkara.edu.in";
 
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+
 
 
 
